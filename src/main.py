@@ -1,21 +1,20 @@
 import os
-import sqlite3
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Header
 from typing import Optional
 import sys
-from openstack import connection
 import openstack
-import openstack.connection
 import openstack.orchestration
 import openstack.orchestration.v1
-import openstack.orchestration.v1.stack
-from psycopg2 import Timestamp
+import json
+import datetime
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-load_dotenv(verbose=True, override=True)
 
-db = sqlite3.connect("app.db")
+from src.stack0 import handle_scale_request
+
+
+load_dotenv(verbose=True, override=True)
 
 app = FastAPI()
 cloud = openstack.connect(cloud="envvars")
@@ -26,14 +25,17 @@ lastest_request = None
 
 @app.get("/")
 def read_root():
-
+    lastest_request = None
+    with open("latest_request.json", "r") as f:
+        lastest_request = json.load(f)
     return {
         "Hello": "World!",
         "lastest_request": lastest_request,
         "cloud": {
             "auth": cloud.auth,
-            # "endpoint": cloud.list_endpoints(),
+            # "endpoints": cloud.list_endpoints(),
         },
+        "lastest_request": lastest_request,
     }
 
 
@@ -59,24 +61,29 @@ async def scale(
 
     try:
         stack = cloud.get_stack(stack_id)
-        print(stack)
+
+        stack_dict = stack.to_dict()
+
+        response_data = {
+            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "stack_id": stack_id,
+            "alarm_body": body,
+            "alarm_info": {
+                "route": route,
+                "auth_token": authorization or "No Authorization header",
+                "headers": headers,
+            },
+            "stack": stack_dict,
+        }
+
+        with open("latest_request.json", "w") as f:
+            json.dump(response_data, f, indent=4)
+
+        handle_scale_request(stack, method, body, cloud)
     except Exception:
         pass
 
-    response_data = {
-        "route": route,
-        "auth_token": authorization or "No Authorization header",
-        "stack": {
-            "id": stack_id,
-        },
-        "headers": headers,
-        "body": body,
-        # "timestamp": timestamp,
-    }
-    lastest_request = response_data
-
-    # print("Received POST request:", response_data)
-    print("Received SCALE request")
+    print("Received SCALE request: ", method)
     return None
 
 
@@ -89,6 +96,6 @@ async def catch_all(request: Request):
 if __name__ == "__main__":
     # ray_app = FastAPIWrapper.bind()
     os.system(
-        "uvicorn app.main:app --reload --host 0.0.0.0 --port 8080 --env-file .env"
+        "uvicorn src.main:app --reload --host 0.0.0.0 --port 8080 --env-file .env"
     )
     # os.system("serve run main:ray_app")
