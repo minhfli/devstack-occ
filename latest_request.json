@@ -1,22 +1,22 @@
 {
-    "timestamp": "2025-04-14T07:11:14.321752",
-    "stack_id": "902ad936-91f3-4a2c-ae26-02310fe80349",
+    "timestamp": "2025-04-29T17:41:48.387759",
+    "stack_id": "813a1b26-d328-4492-b6f7-fe761cfe8023",
     "alarm_body": {
-        "alarm_name": "stack0-cpu_alarm_low-3g2a5xn4pgsp",
-        "alarm_id": "556fe0c0-3334-4b57-bbdb-ed9e1acf63ce",
+        "alarm_name": "stack0-cpu_alarm_high-pmy46v6ftx33",
+        "alarm_id": "407f627a-e658-45b5-a388-5ddd99da2c5b",
         "severity": "low",
         "previous": "alarm",
         "current": "alarm",
-        "reason": "Remaining as alarm due to 2 samples outside threshold, most recent: 29660000000.0",
+        "reason": "Remaining as alarm due to 2 samples outside threshold, most recent: 213050000000.0",
         "reason_data": {
             "type": "threshold",
             "disposition": "outside",
             "count": 2,
-            "most_recent": 29660000000.0
+            "most_recent": 213050000000.0
         }
     },
     "alarm_info": {
-        "route": "/heat/902ad936-91f3-4a2c-ae26-02310fe80349/scale_in",
+        "route": "/813a1b26-d328-4492-b6f7-fe761cfe8023/VDU1/SCALE_OUT",
         "auth_token": "No Authorization header",
         "headers": {
             "host": "0.0.0.0:8080",
@@ -24,16 +24,16 @@
             "accept-encoding": "gzip, deflate",
             "accept": "*/*",
             "connection": "keep-alive",
-            "x-auth-token": "gAAAAABn_LURKwWIKRzQ6LZUjqnFiTE1cWUUPV6WiVfLHqXlf5aPh-IUh8zSUvuEUUgFpLGvQ_2ybelzSG-wxKXlpd_fY3c8PkEZOdpwtYu0vkCs_kxRt74nbOPpeujnOko6vYGq0UwSNfVPPli9rzXDcsYUEjyx6sPyVBGnDc7jViI7iINjP0CK7-X3190Jd-B2LvmYMgOS",
-            "x-openstack-request-id": "req-7bbee9c0-6346-43fc-91ea-c9556b388a3d",
+            "x-auth-token": "gAAAAABoEQ9ZbZMmlBCu4U0Vs6Eq98vG313QYQISvu66PxOpJXTCRzdWtiAd29NIsh-WULPzu3QcrQWu1b8rz950XmCH3yQneJUAASGuu7y0yTxnyNaQJqmMU8r2ALXjk60yCJKUmzUKUyF8_7_Lr3g2r3bS186H67R_XK-OlQBZU66HzVcRyGSK3rawNZuDe7W8tz1wQlMq",
+            "x-openstack-request-id": "req-69dd1c73-da57-4eee-80cf-4db5ec139fe0",
             "content-type": "application/json",
-            "content-length": "364"
+            "content-length": "367"
         }
     },
     "stack": {
         "added": null,
         "capabilities": [],
-        "created_at": "2025-04-14T03:17:07Z",
+        "created_at": "2025-04-29T15:27:31Z",
         "description": "Base HOT for Sample VNF\n",
         "deleted": null,
         "deleted_at": null,
@@ -44,7 +44,7 @@
         "is_rollback_disabled": true,
         "links": [
             {
-                "href": "http://0.0.0.0/heat-api/v1/f3f563890bf44e73b2c5d7d6a3f99483/stacks/stack0/902ad936-91f3-4a2c-ae26-02310fe80349",
+                "href": "http://0.0.0.0/heat-api/v1/6efe60d6f6734f27bf171ecd83dc7bb6/stacks/stack0/813a1b26-d328-4492-b6f7-fe761cfe8023",
                 "rel": "self"
             }
         ],
@@ -52,30 +52,65 @@
         "notification_topics": [],
         "outputs": [
             {
-                "output_key": "instance_id",
-                "description": "ID of VDU1",
-                "output_value": "199d3e35-22b8-411f-b117-2daafb251348"
+                "output_key": "vnf_stack_id",
+                "description": "vnf stack id",
+                "output_value": "813a1b26-d328-4492-b6f7-fe761cfe8023"
             },
             {
                 "output_key": "website_url",
                 "description": "This URL is the \"external\" URL that can be used to access the Wordpress site.\n",
-                "output_value": "http://172.24.4.247/"
+                "output_value": "http://172.24.4.35/"
+            },
+            {
+                "output_key": "VDU1_server_group",
+                "description": "VDU1 server group",
+                "output_value": "86068889-b01a-4d0b-bb28-cefb986ab629"
+            },
+            {
+                "output_key": "VDU1_scale_out_signal_url",
+                "description": "No description given",
+                "output_value": "http://0.0.0.0/heat-api/v1/6efe60d6f6734f27bf171ecd83dc7bb6/stacks/stack0/813a1b26-d328-4492-b6f7-fe761cfe8023/resources/VDU1_scale_out/signal"
+            },
+            {
+                "output_key": "scale_group_instance_ids",
+                "description": "instance ids of VDU1 scale group instances",
+                "output_value": [
+                    "2945b7f1-f2f0-4ef9-953e-9d8bce218ebb"
+                ]
+            },
+            {
+                "output_key": "scale_group_private_ips",
+                "description": "private ips of VDU1 scale group instances",
+                "output_value": [
+                    "10.0.5.132"
+                ]
+            },
+            {
+                "output_key": "scale_group_floating_ips",
+                "description": "floating ips of VDU1 scale group instances",
+                "output_value": [
+                    "172.24.4.149"
+                ]
+            },
+            {
+                "output_key": "VDU1_scale_in_signal_url",
+                "description": "No description given",
+                "output_value": "http://0.0.0.0/heat-api/v1/6efe60d6f6734f27bf171ecd83dc7bb6/stacks/stack0/813a1b26-d328-4492-b6f7-fe761cfe8023/resources/VDU1_scale_in/signal"
             }
         ],
         "owner_id": "admin",
         "parameters": {
-            "OS::stack_id": "902ad936-91f3-4a2c-ae26-02310fe80349",
-            "OS::project_id": "f3f563890bf44e73b2c5d7d6a3f99483",
+            "OS::stack_id": "813a1b26-d328-4492-b6f7-fe761cfe8023",
+            "OS::project_id": "6efe60d6f6734f27bf171ecd83dc7bb6",
             "OS::stack_name": "stack0",
-            "P-VDU1": "{\"vcImageId\": \"e20bb1bf-7656-4744-891e-081f4893cfcd\", \"key_name\": \"minh\"}",
-            "P-VDU1_CP1": "{\"network\": \"heat-net\", \"fixed_ips\": [{\"subnet\": \"heat-subnet\"}], \"security_group\": \"test-secgr\"}",
-            "VDU1-scaling": "{\"enable_autoscale\": true, \"alarm_post_url\": \"http://0.0.0.0:8080\"}",
-            "VDU1-scale-level": "{\"cpu_threshold_hi\": 210000000000.0, \"cpu_threshold_lo\": 90000000000.0, \"ram\": 1024, \"vcpu\": 1, \"level\": 0}"
+            "nfv": "{\"VDU\": {\"VDU1\": {\"vcImageId\": \"5930e167-4bfb-4f9c-b0b6-63805761866f\", \"key_name\": \"minh\"}}, \"CP\": {\"VDU1_CP1\": {\"network\": \"heat-net\", \"fixed_ips\": [{\"subnet\": \"heat-subnet\"}], \"security_group\": \"test-secgr\"}}}",
+            "VDU1-scaling": "{\"enable_autoscale\": true, \"alarm_post_url\": \"http://0.0.0.0:8080\", \"scale-levels\": [{\"level\": 0, \"cpu_threshold_hi\": 210000000000.0, \"cpu_threshold_lo\": 90000000000.0, \"count\": 1, \"ram\": 1024, \"vcpu\": 1}, {\"level\": 1, \"cpu_threshold_hi\": 420000000000.0, \"cpu_threshold_lo\": 180000000000.0, \"count\": 1, \"ram\": 1024, \"vcpu\": 2}, {\"level\": 2, \"cpu_threshold_hi\": 420000000000.0, \"cpu_threshold_lo\": 180000000000.0, \"count\": 2, \"ram\": 1024, \"vcpu\": 2}]}",
+            "VDU1-scale-level": "1"
         },
         "parent_id": null,
         "replaced": null,
-        "status": "UPDATE_COMPLETE",
-        "status_reason": "Stack UPDATE completed successfully",
+        "status": "UPDATE_IN_PROGRESS",
+        "status_reason": "Stack UPDATE started",
         "tags": [],
         "template": null,
         "template_description": "Base HOT for Sample VNF\n",
@@ -83,15 +118,15 @@
         "timeout_mins": null,
         "unchanged": null,
         "updated": null,
-        "updated_at": "2025-04-14T06:59:17Z",
-        "user_project_id": "7ba1d769093d4591bfa54bc353b312ad",
-        "id": "902ad936-91f3-4a2c-ae26-02310fe80349",
+        "updated_at": "2025-04-29T17:40:56Z",
+        "user_project_id": "cf694474f1e6464b9e0b6bbc32d78861",
+        "id": "813a1b26-d328-4492-b6f7-fe761cfe8023",
         "location": {
             "cloud": "envvars",
             "region_name": "RegionOne",
             "zone": null,
             "project": {
-                "id": "f3f563890bf44e73b2c5d7d6a3f99483",
+                "id": "6efe60d6f6734f27bf171ecd83dc7bb6",
                 "name": "demo",
                 "domain_id": "default",
                 "domain_name": null

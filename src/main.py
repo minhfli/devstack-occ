@@ -8,10 +8,13 @@ import openstack.orchestration
 import openstack.orchestration.v1
 import json
 import datetime
+import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from src.stack0 import handle_scale_request
+
+logging.getLogger().setLevel(logging.INFO)
 
 
 load_dotenv(verbose=True, override=True)
@@ -39,10 +42,11 @@ def read_root():
     }
 
 
-@app.post("/heat/{stack_id}/{method}")
+@app.post("/{stack_id}/{aspect}/{method}")
 async def scale(
     request: Request,
     stack_id: str,
+    aspect: str,
     method: str,
     authorization: Optional[str] = Header(None),
 ):
@@ -79,11 +83,11 @@ async def scale(
         with open("latest_request.json", "w") as f:
             json.dump(response_data, f, indent=4)
 
-        handle_scale_request(stack, method, body, cloud)
+        handle_scale_request(stack, aspect, method, body, cloud)
     except Exception:
         pass
 
-    print("Received SCALE request: ", method)
+    print("Received SCALE request: ", aspect, " request: ", method)
     return None
 
 

@@ -12,38 +12,23 @@ import sys
 # temp, to make stack update only once
 stack_update_delay = 1000  # seconds
 
-scale_levels = [
-    {
-        "cpu_threshold_hi": 210000000000.0,
-        "cpu_threshold_lo": 90000000000.0,
-        "ram": 1024,
-        "vcpu": 1,
-        "level": 0,
-    },
-    {
-        "cpu_threshold_hi": 420000000000.0,
-        "cpu_threshold_lo": 180000000000.0,
-        "ram": 1024,
-        "vcpu": 2,
-        "level": 1,
-    },
-    {
-        "cpu_threshold_hi": 630000000000.0,
-        "cpu_threshold_lo": 270000000000.0,
-        "ram": 1024,
-        "vcpu": 3,
-        "level": 2,
-    },
-]
 
-
-def get_current_scale_level(stack: Stack):
+def get_current_scale_level(stack: Stack, aspect: str) -> int:
     stack_params = stack.parameters
-    # logging.info(stack_params)
-    return json.loads(stack_params.get("VDU1-scale-level", '{"level": 0}'))
+    return int(stack_params.get(f"{aspect}-scale-level", "0"))
 
 
-def update_scale_level(stack: Stack, level: int, wait: bool = False):
+def get_scale_levels(stack: Stack, aspect: str) -> list:
+    stack_params = stack.parameters
+    scaling_params = json.loads(
+        stack_params.get(f"{aspect}-scaling", '{"scale-levels":[]}')
+    )
+    # logging.info(scaling_params)
+    # logging.info(scaling_params.get("scale-levels", []))
+    return scaling_params.get("scale-levels", [])
+
+
+def update_scale_level(stack: Stack, aspect: str, level: int, wait: bool = False):
     my_env = os.environ.copy()
     my_env["PATH"] = f"/usr/sbin:/sbin:{my_env['PATH']}"
     # openstack stack update -e env1.yaml --existing stack0
@@ -55,7 +40,7 @@ def update_scale_level(stack: Stack, level: int, wait: bool = False):
                 "stack",
                 "update",
                 "--parameter",
-                f"VDU1-scale-level={json.dumps(scale_levels[level])}",
+                f"{aspect}-scale-level={level}",
                 "--existing",
                 stack.name,
             ],
@@ -70,7 +55,7 @@ def update_scale_level(stack: Stack, level: int, wait: bool = False):
                 "stack",
                 "update",
                 "--parameter",
-                f"VDU1-scale-level={json.dumps(scale_levels[level])}",
+                f"{aspect}-scale-level={level}",
                 "--wait",
                 "--existing",
                 stack.name,
@@ -83,6 +68,7 @@ def update_scale_level(stack: Stack, level: int, wait: bool = False):
 
 def handle_scale_request(
     stack: Stack,
+    aspect: str,
     method: str,
     alarm_body: dict,
     cloud: openstack.connection.Connection,
@@ -92,17 +78,27 @@ def handle_scale_request(
         return
 
     # Determine the scale level
-    current_scale_level = get_current_scale_level(stack)
+    current_scale_level = get_current_scale_level(stack, aspect)
+    scale_levels = get_scale_levels(stack, aspect)
     logging.info(current_scale_level)
     logging.info(method)
-    if method == "scale_in":
-        new_scale_level = max(current_scale_level["level"] - 1, 0)
-    elif method == "scale_out":
-        new_scale_level = min(current_scale_level["level"] + 1, 2)
-    else:
+    logging.info(len(scale_levels) - 1)
+    new_scale_level = current_scale_level
+
+    try:
+        if method == "SCALE_IN":
+            new_scale_level = max(current_scale_level - 1, 0)
+        elif method == "SCALE_OUT":
+            new_scale_level = min(current_scale_level + 1, len(scale_levels) - 1)
+        else:
+            logging.warning(f"Unknown method: {method}")
+    except Exception as e:
+        logging.warning(e)
         return
 
-    if new_scale_level == current_scale_level["level"]:
+    logging.info(new_scale_level)
+
+    if new_scale_level == current_scale_level:
         logging.info("No scaling needed")
         return
 
@@ -129,7 +125,10 @@ def handle_scale_request(
         return
 
     # Update the stack
-    update_scale_level(stack=stack, level=new_scale_level, wait=False)
+    logging.info(
+        f"Updating stack {stack.name} to scale level {new_scale_level} for aspect {aspect}"
+    )
+    update_scale_level(stack=stack, aspect=aspect, level=new_scale_level, wait=False)
     logging.info("Stack updated")
 
 
