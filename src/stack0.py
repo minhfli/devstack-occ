@@ -2,7 +2,7 @@ import openstack.connection
 from openstack.orchestration.v1.stack import Stack
 import openstack
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import logging
 from dotenv import load_dotenv
 import subprocess
@@ -10,7 +10,8 @@ import os
 import sys
 
 # temp, to make stack update only once
-stack_update_delay = 1000  # seconds
+stack_update_delay = 450  # seconds
+stack_create_delay = 1500  # seconds
 
 
 def get_current_scale_level(stack: Stack, aspect: str) -> int:
@@ -107,11 +108,18 @@ def handle_scale_request(
     last_update_time = stack.updated_at
     if last_update_time is None:
         last_update_time = stack.created_at
+        last_update_time = datetime.strptime(
+            last_update_time, "%Y-%m-%dT%H:%M:%SZ"
+        ).replace(tzinfo=timezone.utc)
+        last_update_time = last_update_time + timedelta(
+            seconds=stack_create_delay - stack_update_delay
+        )
+    else:
+        last_update_time = datetime.strptime(
+            last_update_time, "%Y-%m-%dT%H:%M:%SZ"
+        ).replace(tzinfo=timezone.utc)
 
     current_time = datetime.utcnow().replace(tzinfo=timezone.utc)
-    last_update_time = datetime.strptime(
-        last_update_time, "%Y-%m-%dT%H:%M:%SZ"
-    ).replace(tzinfo=timezone.utc)
 
     logging.info("current time:    ", current_time)
     logging.info("last stack time: ", last_update_time)
