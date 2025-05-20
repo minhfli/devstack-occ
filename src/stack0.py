@@ -121,8 +121,8 @@ def handle_scale_request(
 
     current_time = datetime.utcnow().replace(tzinfo=timezone.utc)
 
-    logging.info("current time:    ", current_time)
-    logging.info("last stack time: ", last_update_time)
+    logging.info("current time:    ", current_time.isoformat())
+    logging.info("last stack time: ", last_update_time.isoformat())
     time_passed = current_time - last_update_time
     logging.debug("time passed (s): ", int(time_passed.total_seconds()))
 
