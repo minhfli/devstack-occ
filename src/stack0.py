@@ -10,7 +10,7 @@ import os
 import sys
 
 # temp, to make stack update only once
-stack_update_delay = 450  # seconds
+stack_update_delay = 1200  # seconds
 stack_create_delay = 1500  # seconds
 
 
