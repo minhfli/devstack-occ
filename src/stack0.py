@@ -10,7 +10,8 @@ import os
 import sys
 
 # temp, to make stack update only once
-stack_update_delay = 1200  # seconds
+stack_scale_up_delay = 1500  # seconds
+stack_scale_down_delay = 900  # seconds
 stack_create_delay = 1500  # seconds
 
 
@@ -102,6 +103,11 @@ def handle_scale_request(
     if new_scale_level == current_scale_level:
         logging.info("No scaling needed")
         return
+    stack_update_delay = (
+        stack_scale_up_delay
+        if new_scale_level > current_scale_level
+        else stack_scale_down_delay
+    )
 
     # Chcck time for scaling
     logging.info(f"Scaling to {new_scale_level}")
@@ -136,6 +142,7 @@ def handle_scale_request(
     logging.info(
         f"Updating stack {stack.name} to scale level {new_scale_level} for aspect {aspect}"
     )
+    # logging.info("Temporary disable stack update")
     update_scale_level(stack=stack, aspect=aspect, level=new_scale_level, wait=False)
     logging.info("Stack updated")
 
