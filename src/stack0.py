@@ -9,9 +9,10 @@ import subprocess
 import os
 import sys
 
+autoscaling = False
 # temp, to make stack update only once
-stack_scale_up_delay = 1500  # seconds
-stack_scale_down_delay = 900  # seconds
+stack_scale_up_delay = 1000  # seconds
+stack_scale_down_delay = 600  # seconds
 stack_create_delay = 1500  # seconds
 
 
@@ -31,6 +32,10 @@ def get_scale_levels(stack: Stack, aspect: str) -> list:
 
 
 def update_scale_level(stack: Stack, aspect: str, level: int, wait: bool = False):
+    if autoscaling == False:
+        print("autoscaling is temporary disabled")
+        return
+
     my_env = os.environ.copy()
     my_env["PATH"] = f"/usr/sbin:/sbin:{my_env['PATH']}"
     # openstack stack update -e env1.yaml --existing stack0
@@ -147,13 +152,13 @@ def handle_scale_request(
     logging.info("Stack updated")
 
 
-if __name__ == "__main__":
-    load_dotenv(verbose=True, override=True)
+# if __name__ == "__main__":
+#     load_dotenv(verbose=True, override=True)
 
-    cloud = openstack.connect()
-    stack = cloud.get_stack("stack0")
+#     cloud = openstack.connect()
+#     stack = cloud.get_stack("stack0")
 
-    update_scale_level(stack=stack, level=1, wait=True)
+#     update_scale_level(stack=stack, level=1, wait=True)
 
-    print("Stack updated")
-    # print(cloud.get_stack("stack0"))
+#     print("Stack updated")
+#     # print(cloud.get_stack("stack0"))
